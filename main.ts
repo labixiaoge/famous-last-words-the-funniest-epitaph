@@ -8,7 +8,7 @@
 //
 // Run: node main.ts
 
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 const OUTPUT_DIR = process.env.OUTPUT_DIR ?? "/output";
@@ -29,5 +29,11 @@ if (LINE.includes("\n")) {
 
 mkdirSync(OUTPUT_DIR, { recursive: true });
 writeFileSync(join(OUTPUT_DIR, "entry.txt"), LINE, "utf8");
+
+// Verify what was actually written: re-read and compare byte for byte.
+const written = readFileSync(join(OUTPUT_DIR, "entry.txt"), "utf8");
+if (written !== LINE) {
+  throw new Error("verification failed: entry.txt does not match the line");
+}
 console.log(`wrote ${chars} chars to ${join(OUTPUT_DIR, "entry.txt")}`);
 console.log(LINE);
